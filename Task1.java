@@ -2,12 +2,13 @@ public class Task1 {
 
     static final Object lock = new Object();
     static boolean turn = true;
+    static int finished = 0;
 
     static class playingTask extends Thread {
         boolean type;
         String[] playbook1 = {"do.wav", "mi.wav", "sol.wav", "si.wav"};
         String[] playbook2 = {"re.wav", "fa.wav", "la.wav"};
-        int finished;
+        
         playingTask(boolean type){
             this.type = type;
         }
@@ -26,9 +27,6 @@ public class Task1 {
                         } catch (InterruptedException ignored) {
                             System.out.println("Something Went Wrong!");
                         }
-                        if( s.equals("si.wav")){
-                            finished++;
-                        }
                         turn = false;
                         lock.notifyAll();
                     }
@@ -41,13 +39,11 @@ public class Task1 {
                             catch (InterruptedException ignored) {}
                         }
                         new FilePlayer().play("sounds/" + s);
+                        System.out.println("sounds/" + s + " played by Thread 2");
                         try {
                             Thread.sleep(400);
                         } catch (InterruptedException ignored) {
                             System.out.println("Something Went Wrong!");
-                        }
-                        if( s.equals("la.wav")){
-                            finished++;
                         }
                         turn = true;
                         lock.notifyAll();
@@ -63,6 +59,7 @@ public class Task1 {
                 }
             }
             new FilePlayer().play("sounds/do-octave.wav");
+            System.out.println("sounds/do-octave.wav played by " + (type ? "Thread 1" : "Thread 2"));
         }
     }
 
